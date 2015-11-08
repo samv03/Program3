@@ -25,7 +25,8 @@ class hash_Table
 		unsigned int hash(char * string);
 		int findPos( const char * string);
 
-		int get_NextPrime();
+		int get_nextPrime(int num);
+		bool isPrime(int num);
 
 		float lambda;			// load factor
 		int tableSize;			// the size of the hash_Table
