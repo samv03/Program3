@@ -129,8 +129,8 @@ int main(int argc, char **argv)
 	ofstream fout;
 	//LinkList list;
 	bool empty = false, newlinechk = false;
-	char chars[100], peek;
-	int n = 0, pos = 1, used[100] = {0}, i = 0;
+	char peek;
+	int used[100] = {0};
 
 	//check for incorrect number of arguements, output error if true
 	if(argc != 2)
@@ -372,7 +372,7 @@ void tokenize1( const string& str, vector<string>& tokens, const string& delimit
     int tokenEnd = str.find_first_of( delimiters, tokenStart );
     
     // loop through input string
-    while ( tokenStart != string::npos )
+    while ( unsigned(tokenStart) != string::npos )
     {
         // found a token, add it to the vector
         tokens.push_back( str.substr( tokenStart, tokenEnd - tokenStart ) );
@@ -390,7 +390,7 @@ void tokenize2( const string& str, vector<string>& tokens, const string& valid =
     // find next delimiter (i.e., end of first token)
     int tokenEnd = str.find_first_not_of( valid, tokenStart );
     // loop through input string
-    while ( tokenStart != string::npos )
+    while ( unsigned(tokenStart) != string::npos )
     {
         // found a token, add it to the vector
         tokens.push_back( str.substr( tokenStart, tokenEnd - tokenStart ) );
