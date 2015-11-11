@@ -1,16 +1,20 @@
 #include "Word.h"
 
 // constructor
-word::word(char * string)
+word::word(const char * string)
 {
-	item = string;
-	info = EMPTY;
+	info = 0;	// 0 = empty
 	set_Length(string); 
 	set_Item(string);
 }
 
+word::word()
+{
+	info = 0; // 0 = empty
+}
+
 //default destructor?
-word::~word();
+word::~word() {}
 
 // getter for item
 const char * word:: get_Item() const
@@ -19,7 +23,7 @@ const char * word:: get_Item() const
 }
 
 // getter for length - may not need this. Could be useful in the print function later on
-const char * word:: get_Length() const
+int word:: get_Length() const
 {
 	return length;
 }
@@ -37,13 +41,13 @@ bool word::operator != (const word & rhs) const
 }
 
 // setter for length. I don't know if we really need this or not.
-void word::set_Length(char * string)
+void word::set_Length(const char * string)
 {
-	length = strlen(string);
+	length = strlen(string); //check this?
 }
 
 //setter for item
-void word::set_Item(char * string)
+void word::set_Item(const char * string)
 {
 	item = string;
 }

@@ -8,22 +8,25 @@ hash_Table::hash_Table(int size)
 	makeEmpty();
 }
 
+//gonna need a destructor for points, even though we don't allocate anything
+//hash_Table::~hash_Table() {}
+
 // insert - modified from book
-void hash_Table::insert(char * string)
+void hash_Table::insert(const char * string)
 {
 	// send to hash function
 	unsigned int pos = hash(string);
 
 	// see if it is already in the table
 	unsigned int found = find_Pos(string);
-	if (table[found].info == ACTIVE)
+	if (table[found].info == 1)		// if active, increment frequency
 		table[found].frequency++;
 
 	else
 	{
 		table[pos].set_Item(string);
 		table[pos].frequency = 1;
-		table[pos].info = ACTIVE;
+		table[pos].info = 1;		// set the entryType to active if empty
 		numElements++;
 	}
 
@@ -43,7 +46,7 @@ void hash_Table::insert(char * string)
 
 // find - modified from book
 // Needs work
-unsigned int hash_Table::find_Pos(char * string)
+unsigned int hash_Table::find_Pos(const char * string)
 {
 	//get hash value and start traversal there
 	unsigned int pos = hash(string);
@@ -51,7 +54,7 @@ unsigned int hash_Table::find_Pos(char * string)
 	// traverse vector "table" and see if the current entry is 
 		// not deleted and has the same char * string as the one we're trying to find
 	//this loop will drop out once it reaches an empty position (will not go forever!)
-	while (table[pos].info != EMPTY && table[pos].get_Item() != string)
+	while (table[pos].info != 0 && table[pos].get_Item() != string)
 	{
 		pos ++;				//using linear probing
 		if (pos >= tableSize)
@@ -65,16 +68,16 @@ unsigned int hash_Table::find_Pos(char * string)
 	// get hash value
 	// traverse vector "Table" until you find the item
 	// mark the item .info as EMPTY
-void hash_Table::remove (char * string)
+void hash_Table::remove (const char * string)
 {	
 	int pos = hash(string);
-	if (table[pos].info == ACTIVE)
-		table[pos].info = DELETED;
+	if (table[pos].info == 1)		// 1 = active
+		table[pos].info = 2;		// 2 = deleted
 
 }
 
 // hash function (direct from book, with speed modifications learned in CSC314)
-unsigned int hash_Table::hash(char * word)
+unsigned int hash_Table::hash(const char * word)
 {
 	unsigned int hashVal = 0;
 	for (unsigned int i = 0; i < sizeof(word); i ++)
@@ -97,20 +100,19 @@ void hash_Table::rehash()
 	
 	table.resize(get_nextPrime( 2 * get_tableSize()));
 	for (unsigned int i = 0; i < tableSize; i++)		//for each thing in the table, set to empty
-		table[i].info = EMPTY;
+		table[i].info = 0;				// 0 = empty
 
 	numElements = 0;
 
 	for (unsigned int i = 0; i < tableSize; i++)
 	{
-		if (table[i].info == ACTIVE)
+		if (table[i].info == 1)				// if active, move to new vector and increment number of elements
 		{
 			insert( std:: move (table[i].get_Item()) ) ;
 			numElements++;
 		}
 	}
 
-	// delete oldTable; <---- is this safe?
 	cout << "Rehash complete." << endl;
 }
 
@@ -121,7 +123,7 @@ int hash_Table::get_nextPrime(int num)
 	bool prime;	
 
 	//add one to the number passed in until you find a prime number
-	for (int i = num; i < num * 2; i++)
+	for (int i = num * 2 ; i < num * num; i++)
 	{
 		prime = isPrime(num);
 		if (prime)
@@ -153,7 +155,7 @@ bool hash_Table::isPrime(int num)
 void hash_Table::makeEmpty()
 {
 	for (auto & entry: table)
-		entry.info = EMPTY;
+		entry.info = 0; 	// set each element as empty
 }
 
 //get lambda
