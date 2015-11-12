@@ -10,7 +10,7 @@ GCC = g++
 LINK = g++
 
 # Compiler flags
-CFLAGS = -Wall -O -std=c++11 -c
+CFLAGS = -Wall  -std=c++11 -c
 CXXFLAGS = $(CFLAGS)
 
 # Fill in special libraries needed here

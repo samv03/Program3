@@ -4,37 +4,46 @@
 // constructor
 hash_Table::hash_Table(int size)
 {
-	vector<word> table(size);
+	table.resize(size);
+	tableSize = size;
 	makeEmpty();
 }
+
 
 //gonna need a destructor for points, even though we don't allocate anything
 //hash_Table::~hash_Table() {}
 
 // insert - modified from book
-void hash_Table::insert(const char * string)
+void hash_Table::insert(word * string)
 {
+	//cout << "Inserting into Hash" << endl;
 	// send to hash function
-	unsigned int pos = hash(string);
+	unsigned int pos = hash(string->get_Item());
 
 	// see if it is already in the table
-	unsigned int found = find_Pos(string);
+	unsigned int found = find_Pos(string->get_Item());
 	if (table[found].info == 1)		// if active, increment frequency
+	{
+		cout << "Item: " <<  string->get_Item() << endl;
 		table[found].frequency++;
+		cout << "Freq: " << table[found].frequency << endl;
+	}
 
 	else
 	{
-		table[pos].set_Item(string);
+		//cout << "Inside else" << endl;
+		table[pos].set_Item(string->get_Item());
 		table[pos].frequency = 1;
 		table[pos].info = 1;		// set the entryType to active if empty
 		numElements++;
+		setLambda();
 	}
 
 	//check lambda value
-	float lambda = get_Lambda();
-
+	//float loadFactor = get_Lambda();
+	
 	// if too high, rehash the table, else return from function
-	if (lambda >= 0.75)
+	if (get_Lambda() >= 0.75)
 	{
 		rehash();
 		return;
@@ -56,9 +65,13 @@ unsigned int hash_Table::find_Pos(const char * string)
 	//this loop will drop out once it reaches an empty position (will not go forever!)
 	while (table[pos].info != 0 && table[pos].get_Item() != string)
 	{
+		cout << "Pos: " << pos << endl;
+		//cout << "in find_pos" << endl;
 		pos ++;				//using linear probing
 		if (pos >= tableSize)
+		{
 			pos -= tableSize;
+		}
 	}
 
 	return pos;
@@ -68,9 +81,9 @@ unsigned int hash_Table::find_Pos(const char * string)
 	// get hash value
 	// traverse vector "Table" until you find the item
 	// mark the item .info as EMPTY
-void hash_Table::remove (const char * string)
+void hash_Table::remove (word * string)
 {	
-	int pos = hash(string);
+	int pos = hash(string->get_Item());
 	if (table[pos].info == 1)		// 1 = active
 		table[pos].info = 2;		// 2 = deleted
 
@@ -108,7 +121,9 @@ void hash_Table::rehash()
 	{
 		if (table[i].info == 1)				// if active, move to new vector and increment number of elements
 		{
-			insert( std:: move (table[i].get_Item()) ) ;
+			word * moveWord = new (nothrow) word (table[i].get_Item());
+			insert(moveWord);
+			//insert( std:: move (table[i].get_Item()) ) ;
 			numElements++;
 		}
 	}
@@ -142,7 +157,7 @@ bool hash_Table::isPrime(int num)
 	if (num == 2 || num == 3)
 		return true;
 
-	for (int i = 0; i < sqrt(num) + 1; i++)
+	for (int i = 1; i < sqrt(num) + 1; i++)
 	{
 		if ( num % i == 0)
 			return false;
@@ -161,7 +176,7 @@ void hash_Table::makeEmpty()
 //get lambda
 float hash_Table::get_Lambda() const
 {
-	return float(numElements/tableSize);
+	return lambda;
 }
 
 //get table size
@@ -176,4 +191,8 @@ unsigned int hash_Table::get_numElements() const
 	return numElements;
 }
 
+void hash_Table::setLambda()
+{
+	lambda = float(numElements)/float(tableSize);
+}
 

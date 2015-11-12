@@ -1,5 +1,7 @@
 #include <cstring>
 
+#ifndef _WORD__H_
+#define _WORD__H_
 class word
 {
 	public:
@@ -30,3 +32,5 @@ class word
 		void set_Length(const char * string);
 
 };
+
+#endif

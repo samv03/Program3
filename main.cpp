@@ -88,10 +88,12 @@
 #include <cstdlib>
 #include <string>
 #include <vector>
+#include "Word.h"
+#include "Hash_Table.h"
 
 using namespace std;
 
-const char* DELIMITERS = " ,.*!<>:()?;-";
+const char* DELIMITERS = " ,.*!<>:()?;\"-";
 const char* VALID = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
 /*******************************************************************************
@@ -124,13 +126,11 @@ void print(string word, ostream &out, bool newlinechk);
 int main(int argc, char **argv)
 {
 	//initializing variables
-	string word, result;
+	string inputWord, result;
 	ifstream fin;
 	ofstream fout;
 	//LinkList list;
-	bool empty = false, newlinechk = false;
-	char peek;
-	int used[100] = {0};
+	bool empty = false;
 
 	//check for incorrect number of arguements, output error if true
 	if(argc != 2)
@@ -141,29 +141,23 @@ int main(int argc, char **argv)
 	}
 
 	openFile(fin, argv[1]);
-	
+	hash_Table * table = new (nothrow) hash_Table(1009);
 
 	//get each word from the input file
-	while( fin >> word)
+	while( fin >> inputWord)
 	{
 		//calls the function to format the word, removing upper case and punct
-		formatWord(word, empty);
-
-		//look at the next character in the stream
-		peek = fin.peek();
-		//if it is a newline set newlinechk to true
-		if(peek == '\n')
-			newlinechk =true;
+		formatWord(inputWord, empty);
         
         if( !empty)
         {
-            print(word, cout, newlinechk);
-            cout << endl;
+			word * newWord = new (nothrow) word(inputWord.c_str());
+			table->insert(newWord);
+            //print(word, cout, newlinechk);
+            //cout << endl;
         }
-		//clear used array and set checks to false
-		clearArray(used, 100);
+		
 		empty = false;
-		newlinechk = false;
 	}
 	//close the file and return 0
 	fin.close();
@@ -215,78 +209,12 @@ void formatWord(string &word, bool &empty )
     vector<string> tokens;
     
     it = word.begin();
-    /*
-    while( (*it < 65 || *it > 122 || (*it > 90 && *it < 97)) && it != word.end() - 1)
-    {
-        word.erase(it);
-        it = word.begin();
-    }
-    
-    
-    
-    it = word.begin();
-    
-    
-	if(isupper(*it))
-	{
-		capital = true;
-		*it = tolower(*it);
-	}
-
-	//set the iterator to the end, then move back one spot
-	it = word.end();
-	it--;
-    
-    while( (*it < 97 || *it >122) && it != word.begin())
-    {
-        word.erase(it);
-        it = word.end();
-        it--;
-    }
-    */
-    /*
-    char * ptr;
-    
-    if(sizeof(word) == 0)
-    {
-        empty = true;
-    }
-    
-    cout << "Before: " << word << endl;
-    
-    ptr = strtok(&word[0], ",!:.%#();[]<>");
-    
-    if( ptr != nullptr)
-    {
-        string word(ptr);
-    }
-    
-    it = word.begin();
-    for( ; it != word.end(); it++)
-    {
-        if(isupper(*it))
-        {
-            *it = tolower(*it);
-        }
-    }
-    it = word.begin();
-    if( *it == 39)
-    {
-        word.erase(it);
-    }
-    it = word.end();
-    if( *it == 39)
-    {
-        word.erase(it);
-    }
-    */
     
 	//cout << "Word: " << word << endl;
     for( ; it != word.end(); it++)
     {
 		if( it == word.begin() && *it == 39 )
 		{
-			cout << "<<-----First!----->>" << endl;
 			intApos = false;
 			begApos = true;
 		}
@@ -299,7 +227,6 @@ void formatWord(string &word, bool &empty )
         {
             if(it != word.end() - 1 && it != word.begin())
             {
-				cout << "<<----HERE---->>" << endl;
                 intApos = true;
             }
 			else
@@ -372,7 +299,7 @@ void tokenize1( const string& str, vector<string>& tokens, const string& delimit
     int tokenEnd = str.find_first_of( delimiters, tokenStart );
     
     // loop through input string
-    while ( unsigned(tokenStart) != string::npos )
+    while ( tokenStart != signed(string::npos) )
     {
         // found a token, add it to the vector
         tokens.push_back( str.substr( tokenStart, tokenEnd - tokenStart ) );
@@ -390,7 +317,7 @@ void tokenize2( const string& str, vector<string>& tokens, const string& valid =
     // find next delimiter (i.e., end of first token)
     int tokenEnd = str.find_first_not_of( valid, tokenStart );
     // loop through input string
-    while ( unsigned(tokenStart) != string::npos )
+    while ( tokenStart != signed(string::npos) )
     {
         // found a token, add it to the vector
         tokens.push_back( str.substr( tokenStart, tokenEnd - tokenStart ) );
@@ -427,3 +354,5 @@ void print(string word, ostream &out, bool newlinechk)
 	//else
 	//	out << " ";
 }
+
+

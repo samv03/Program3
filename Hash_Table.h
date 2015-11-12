@@ -9,8 +9,8 @@ class hash_Table
 	public:
 		hash_Table(int size);
 
-		void insert(const char * word);		// inserts word into hash table
-		void remove(const char * word);		// removes word from hash table
+		void insert(word * string);		// inserts word into hash table
+		void remove(word * string);		// removes word from hash table
 
 		// getters
 		float get_Lambda() const;		// returns lambda/load factor
@@ -28,6 +28,7 @@ class hash_Table
 
 		int get_nextPrime(int num);		// finds the new table size for rehashing 
 		bool isPrime(int num);			// checks to see if a number is prime
+		void setLambda();
 
 		float lambda;				// load factor
 		unsigned int tableSize;			// the size of the hash_Table
